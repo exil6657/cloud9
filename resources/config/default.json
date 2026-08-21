@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "modules": {
+    "realmMode": false,
+    "modules": {
+      "Fullbright": {
+        "enabled": false,
+        "keybind": 0,
+        "settings": {
+          "gamma": 10.0,
+          "mode": "gamma"
+        }
+      }
+    }
+  },
+  "friends": [],
+  "waypoints": [],
+  "schematicUI": {
+    "open": false,
+    "tab": "loaded",
+    "selectedId": "",
+    "searchFilter": "",
+    "renderMode": "mixed",
+    "maxDistance": 64.0,
+    "includeAir": false
+  }
+}

@@ -1,0 +1,31 @@
+# Build output
+/build/
+/out/
+/cmake-build-*/
+*.obj
+*.o
+*.a
+*.so
+*.dll
+*.pdb
+*.ilk
+
+# IDE files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Runtime data
+Cloud9/
+cloud9.log
+*.tmp
+
+# Generated reports
+coverage/
+
+# Local test artifacts
+/tests/fixtures/generated/
+/cloud9_demo
+/cloud9_tests

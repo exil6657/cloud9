@@ -1,0 +1,22 @@
+{
+  "minecraft:stone": "minecraft:stone",
+  "minecraft:grass_block": "minecraft:grass_block",
+  "minecraft:dirt": "minecraft:dirt",
+  "minecraft:cobblestone": "minecraft:cobblestone",
+  "minecraft:oak_planks": "minecraft:oak_planks",
+  "minecraft:oak_log": "minecraft:oak_log",
+  "minecraft:oak_leaves": "minecraft:oak_leaves",
+  "minecraft:glass": "minecraft:glass",
+  "minecraft:coal_ore": "minecraft:coal_ore",
+  "minecraft:iron_ore": "minecraft:iron_ore",
+  "minecraft:gold_ore": "minecraft:gold_ore",
+  "minecraft:diamond_ore": "minecraft:diamond_ore",
+  "minecraft:emerald_ore": "minecraft:emerald_ore",
+  "minecraft:redstone_ore": "minecraft:redstone_ore",
+  "minecraft:lapis_ore": "minecraft:lapis_ore",
+  "minecraft:ancient_debris": "minecraft:ancient_debris",
+  "minecraft:obsidian": "minecraft:obsidian",
+  "minecraft:bedrock": "minecraft:bedrock",
+  "minecraft:water": "minecraft:water",
+  "minecraft:lava": "minecraft:lava"
+}
