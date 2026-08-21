@@ -10,8 +10,9 @@
    renderer commands; continue expanding this set without game-memory access.
 5. ✅ Add an explicit capability registry so unavailable features remain
    disabled until a host can prove that the capability exists.
-6. Expand the schematic block-state mapping from data files and validate it
-   against Bedrock's current registry in an offline tool.
+6. ✅ Add a data-driven block-state mapping loader and offline schematic
+   palette validation. The checked-in mapping remains intentionally small and
+   must be expanded/verified against the target Bedrock registry.
 7. ✅ Add `SchematicManager`, `SchematicRenderer`, and host-neutral
    `.schematic` commands for loading, selecting, placing, layering, searching,
    and managing multiple schematics.

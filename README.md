@@ -57,6 +57,8 @@ explanatory error for gzip files and still supports uncompressed NBT fixtures.
   lists, byte arrays, int arrays, and long arrays.
 - Schematic model support for vanilla structure NBT, legacy MCEdit, Sponge
   palette data, and Litematica region palette/bit-packed block states.
+- Data-driven `BlockMapping` loader and offline schematic palette validation
+  against JSON Java-to-Bedrock mappings.
 - Placement transforms, layer filtering, resource accounting, verification,
   schematic block search, stable multi-schematic management, and a
   host-independent ghost/wireframe schematic renderer.
@@ -75,5 +77,7 @@ schematics, layer/render settings, and search filters.
 from the model using text and rectangle commands; a host can translate these
 to ImGui, DirectX, or another toolkit.
 
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for extension points and
-[`docs/ROADMAP.md`](docs/ROADMAP.md) for the safe implementation order.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for extension points,
+[`docs/ROADMAP.md`](docs/ROADMAP.md) for the safe implementation order, and
+[`docs/FEATURE_STATUS.md`](docs/FEATURE_STATUS.md) for the generated done/TODO
+feature inventory.

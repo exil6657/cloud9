@@ -38,6 +38,7 @@ add_library(cloud9_core STATIC
     src/modules/visual/Fullbright.cpp
     src/render/ScreenProjection.cpp
     src/render/WorldRenderer.cpp
+    src/schematic/BlockMapping.cpp
     src/schematic/NBTParser.cpp
     src/schematic/Schematic.cpp
     src/schematic/SchematicLoader.cpp

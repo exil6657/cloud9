@@ -6,6 +6,7 @@
 #include "modules/visual/Fullbright.h"
 #include "render/WorldRenderer.h"
 #include "schematic/NBTParser.h"
+#include "schematic/BlockMapping.h"
 #include "schematic/SchematicManager.h"
 #include "schematic/SchematicRenderer.h"
 #include "schematic/Schematic.h"
@@ -161,6 +162,12 @@ void testSchematic() {
     };
     const cloud9::VerificationResult result = cloud9::SchematicVerifier::verify(schematic, placement, reader);
     assert(result.total == 2 && result.correct == 1 && result.missing == 1);
+    cloud9::BlockMapping mapping;
+    assert(mapping.loadJson(cloud9::Json(cloud9::Json::object_t{{"minecraft:stone", "minecraft:stone"}})));
+    assert(mapping.translate({"minecraft:stone", {}}).has_value());
+    assert(!mapping.translate({"minecraft:diamond", {}}).has_value());
+    const auto mappingReport = mapping.validate(schematic);
+    assert(mappingReport.paletteEntries == 2 && mappingReport.mappedEntries == 1 && mappingReport.unmappedEntries == 1);
     cloud9::RenderCommandBuffer renderCommands;
     cloud9::LayerSystem layers;
     const auto renderStats = cloud9::SchematicRenderer::render(schematic, placement, layers, reader,
