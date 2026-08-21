@@ -8,6 +8,8 @@
 
 namespace cloud9 {
 
+class RenderCommandBuffer;
+
 struct Event {
     virtual ~Event() = default;
     bool cancelled{false};
@@ -22,10 +24,12 @@ struct Render2DEvent final : Event {
     int width{0};
     int height{0};
     double deltaSeconds{0.0};
+    RenderCommandBuffer* commands{nullptr};
 };
 
 struct Render3DEvent final : Event {
     double deltaSeconds{0.0};
+    RenderCommandBuffer* commands{nullptr};
 };
 
 struct KeyEvent final : Event {

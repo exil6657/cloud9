@@ -1,4 +1,5 @@
 #include "client/Client.h"
+#include "utils/Version.h"
 #include "modules/FeatureCatalog.h"
 
 #include <iostream>

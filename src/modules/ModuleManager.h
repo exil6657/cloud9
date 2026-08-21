@@ -15,6 +15,7 @@ public:
     [[nodiscard]] const Module* find(const std::string& name) const noexcept;
     [[nodiscard]] std::vector<Module*> modules() noexcept;
     [[nodiscard]] std::vector<const Module*> modules() const noexcept;
+    [[nodiscard]] std::vector<std::string> enabledNames() const;
 
     bool setEnabled(const std::string& name, bool enabled);
     bool toggle(const std::string& name);

@@ -50,6 +50,14 @@ std::vector<const Module*> ModuleManager::modules() const noexcept {
     return result;
 }
 
+std::vector<std::string> ModuleManager::enabledNames() const {
+    std::vector<std::string> result;
+    for (const auto& module : modules_) {
+        if (module->enabled()) result.push_back(module->name());
+    }
+    return result;
+}
+
 bool ModuleManager::setEnabled(const std::string& name, bool enabled) {
     Module* module = find(name);
     if (module == nullptr) return false;

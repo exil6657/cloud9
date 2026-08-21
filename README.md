@@ -20,9 +20,10 @@ main thread.
 The feature catalog records the requested roadmap as 119 unique module
 entries (the specification lists `AutoFish` twice for organization), including
 safety classification. Roadmap entries are exposed as unavailable placeholders
-rather than pretending that a feature is implemented. The first available module is
-`Fullbright`, represented as a visual-state override that a renderer adapter can
-consume.
+rather than pretending that a feature is implemented. The available modules are `Fullbright`, `Coordinates`, `FPS Counter`,
+`Watermark`, and `ArrayList`. They are host-independent: HUD modules emit
+`RenderCommandBuffer` text commands, while `Fullbright` exposes a visual-state
+override that a renderer adapter can consume.
 
 ## Build
 
@@ -47,16 +48,21 @@ explanatory error for gzip files and still supports uncompressed NBT fixtures.
   vector-three settings.
 - JSON profiles stored below `%APPDATA%/Cloud9` on Windows or
   `$XDG_CONFIG_HOME/Cloud9` / `~/.config/Cloud9` on Unix.
-- Pure command parser for `.help`, `.toggle`, `.bind`, `.friend`, `.waypoint`,
-  `.config`, `.panic`, and `.realm`.
+- Pure command parser for `.help`, `.toggle`, `.bind`, `.set`, `.friend`,
+  `.waypoint`, `.config`, `.panic`, `.realm`, `.coords`, and `.schematic`.
 - Bounds-checked NBT parsing for all vanilla tag kinds, including compounds,
   lists, byte arrays, int arrays, and long arrays.
 - Schematic model support for vanilla structure NBT, legacy MCEdit, Sponge
   palette data, and Litematica region palette/bit-packed block states.
 - Placement transforms, layer filtering, resource accounting, verification,
-  and schematic block search.
+  schematic block search, stable multi-schematic management, and a
+  host-independent ghost/wireframe schematic renderer.
 - Pattern parsing and scanning over caller-supplied bytes, useful for adapter
-  tests without reading another process.
+tests without reading another process.
+- Offline `WorldRenderer` projection helpers and a renderer-independent command
+buffer for tracers and 3D boxes.
+- First HUD modules: Coordinates, FPS Counter, Watermark, and ArrayList, all
+emitting commands without ImGui or DirectX dependencies.
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for extension points and
 [`docs/ROADMAP.md`](docs/ROADMAP.md) for the safe implementation order.

@@ -13,9 +13,10 @@ all game-facing data is represented by snapshots and interfaces.
 4. `ModuleManager` applies realm-mode policy before lifecycle transitions.
 5. `ConfigManager` serializes module state, friends, and waypoints to a named
    JSON profile.
-6. The schematic subsystem loads an immutable `Schematic`, then uses a
-   `SchematicPlacement` and `SchematicVerifier` against a caller-provided block
-   reader.
+6. The schematic subsystem loads immutable `Schematic` values through
+   `SchematicManager`, then uses stable placements, layers, search, resources,
+   `SchematicRenderer`, and `SchematicVerifier` against caller-provided block
+   readers.
 
 ## Adapter boundaries
 
@@ -23,9 +24,11 @@ all game-facing data is represented by snapshots and interfaces.
   locate a process or write memory.
 - `hooks/HookManager` tracks named, externally installed callbacks. The core
   does not depend on MinHook or kiero.
-- `render/ScreenProjection` and `render/RenderCommands` accept matrices and
-  output geometry. A host may translate commands to ImGui, DirectX, or another
-  renderer.
+- `render/ScreenProjection`, `render/WorldRenderer`, and
+  `render/RenderCommands` accept matrices and output geometry. A host may
+  translate commands to ImGui, DirectX, or another renderer.
+- `Render2DEvent` and `Render3DEvent` carry an optional command-buffer pointer;
+  the core owns the frame buffer and clears it at the start of each frame.
 - `sdk/WorldSnapshot` is a read-only data contract. No SDK struct contains
   guessed offsets or methods that dereference game memory.
 

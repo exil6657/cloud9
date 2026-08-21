@@ -17,6 +17,10 @@ add_library(cloud9_core STATIC
     src/client/ConfigManager.cpp
     src/client/FriendManager.cpp
     src/gui/ThemeManager.cpp
+    src/modules/hud/ArrayList.cpp
+    src/modules/hud/Coordinates.cpp
+    src/modules/hud/FPSCounter.cpp
+    src/modules/hud/Watermark.cpp
     src/events/EventManager.cpp
     src/hooks/HookManager.cpp
     src/hooks/SignatureScanner.cpp
@@ -25,9 +29,12 @@ add_library(cloud9_core STATIC
     src/modules/FeatureCatalog.cpp
     src/modules/visual/Fullbright.cpp
     src/render/ScreenProjection.cpp
+    src/render/WorldRenderer.cpp
     src/schematic/NBTParser.cpp
     src/schematic/Schematic.cpp
     src/schematic/SchematicLoader.cpp
+    src/schematic/SchematicManager.cpp
+    src/schematic/SchematicRenderer.cpp
     src/schematic/SchematicVerifier.cpp
     src/utils/Json.cpp
     src/utils/Logger.cpp

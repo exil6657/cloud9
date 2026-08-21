@@ -5,6 +5,8 @@
 #include "client/FriendManager.h"
 #include "events/EventManager.h"
 #include "modules/ModuleManager.h"
+#include "render/RenderCommands.h"
+#include "schematic/SchematicManager.h"
 
 #include <filesystem>
 #include <string>
@@ -28,7 +30,11 @@ public:
     [[nodiscard]] CommandManager& commandManager() noexcept { return commands_; }
     [[nodiscard]] ConfigManager& configManager() noexcept { return config_; }
     [[nodiscard]] FriendManager& friendManager() noexcept { return friends_; }
+    [[nodiscard]] SchematicManager& schematicManager() noexcept { return schematics_; }
+    [[nodiscard]] const SchematicManager& schematicManager() const noexcept { return schematics_; }
     [[nodiscard]] const std::vector<Waypoint>& waypoints() const noexcept { return waypoints_; }
+    [[nodiscard]] const RenderCommandBuffer& renderCommands2D() const noexcept { return commands2D_; }
+    [[nodiscard]] const RenderCommandBuffer& renderCommands3D() const noexcept { return commands3D_; }
 
     void tick(double deltaSeconds);
     void render2D(int width, int height, double deltaSeconds);
@@ -48,10 +54,13 @@ private:
     EventManager events_;
     ModuleManager modules_;
     FriendManager friends_;
+    SchematicManager schematics_;
     ConfigManager config_;
     CommandManager commands_;
     std::vector<Waypoint> waypoints_;
     WorldSnapshot lastSnapshot_;
+    RenderCommandBuffer commands2D_;
+    RenderCommandBuffer commands3D_;
     bool initialized_{false};
 };
 

@@ -2,6 +2,10 @@
 
 #include "modules/FeatureCatalog.h"
 #include "modules/Settings.h"
+#include "modules/hud/ArrayList.h"
+#include "modules/hud/Coordinates.h"
+#include "modules/hud/FPSCounter.h"
+#include "modules/hud/Watermark.h"
 #include "modules/visual/Fullbright.h"
 #include "utils/Logger.h"
 
@@ -66,8 +70,17 @@ void Client::shutdown() {
 
 void Client::registerFeatures() {
     for (const FeatureDescriptor& descriptor : featureCatalog()) {
-        if (descriptor.implemented && std::string(descriptor.name) == "Fullbright") {
+        const std::string name = descriptor.name;
+        if (name == "Fullbright") {
             (void)modules_.registerModule(std::make_unique<Fullbright>());
+        } else if (name == "Coordinates") {
+            (void)modules_.registerModule(std::make_unique<Coordinates>());
+        } else if (name == "FPS Counter") {
+            (void)modules_.registerModule(std::make_unique<FPSCounter>());
+        } else if (name == "Watermark") {
+            (void)modules_.registerModule(std::make_unique<Watermark>());
+        } else if (name == "ArrayList") {
+            (void)modules_.registerModule(std::make_unique<ArrayList>([this] { return modules_.enabledNames(); }));
         } else {
             (void)modules_.registerModule(std::make_unique<CatalogModule>(
                 descriptor.name, descriptor.description, descriptor.category, descriptor.safety, descriptor.implemented));
@@ -87,7 +100,7 @@ void Client::registerCommands() {
             for (const auto& setting : module->settings()) messages.push_back("  " + setting->name() + ": " + setting->description());
             return CommandResult::ok(std::move(messages));
         }
-        std::vector<std::string> messages{"commands: .help, .toggle, .bind, .set, .friend, .waypoint, .config, .panic, .realm, .coords"};
+        std::vector<std::string> messages{"commands: .help, .toggle, .bind, .set, .friend, .waypoint, .config, .panic, .realm, .coords, .schematic"};
         for (const Module* module : modules_.modules()) {
             messages.push_back(module->name() + " [" + safetyName(module->safety()) + "]" +
                                (module->available() ? "" : " (roadmap)"));
@@ -235,6 +248,94 @@ void Client::registerCommands() {
         return CommandResult::ok({"XYZ: " + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " +
                                   std::to_string(position.z) + " [" + dimensionName(lastSnapshot_.dimension) + "]"});
     });
+
+    (void)commands_.registerCommand("schematic", "manage loaded schematics", [this](const auto& args) {
+        if (args.empty()) return CommandResult::error("usage: .schematic load|unload|list|active|pos|rotate|mirror|layer|search ...");
+        const std::string& action = args[0];
+        if (action == "list") {
+            const auto values = schematics_.list();
+            if (values.empty()) return CommandResult::ok({"no schematics loaded"});
+            std::vector<std::string> messages;
+            for (const auto& value : values) {
+                messages.push_back(value.id + (value.active ? " *" : "") + " " + value.format + " " +
+                                   std::to_string(value.size.x) + "x" + std::to_string(value.size.y) + "x" +
+                                   std::to_string(value.size.z) + " (" + std::to_string(value.blocks) + " blocks)");
+            }
+            return CommandResult::ok(std::move(messages));
+        }
+        if (action == "load") {
+            if (args.size() < 2) return CommandResult::error("usage: .schematic load <path> [id]");
+            const auto result = schematics_.loadFile(args[1], args.size() >= 3 ? args[2] : std::string{});
+            if (!result) return CommandResult::error(result.error);
+            std::vector<std::string> messages{"schematic loaded"};
+            for (const auto& warning : result.warnings) messages.push_back("warning: " + warning);
+            return CommandResult::ok(std::move(messages));
+        }
+        if (action == "unload") {
+            if (args.size() < 2 || !schematics_.unload(args[1])) return CommandResult::error(schematics_.lastError());
+            return CommandResult::ok({"schematic unloaded"});
+        }
+        if (action == "active") {
+            if (args.size() < 2 || !schematics_.setActive(args[1])) return CommandResult::error(schematics_.lastError());
+            return CommandResult::ok({"active schematic: " + schematics_.activeId()});
+        }
+        if (action == "pos") {
+            if (args.size() < 5) return CommandResult::error("usage: .schematic pos <id> <x> <y> <z>");
+            const auto x = parseInt(args[2]);
+            const auto y = parseInt(args[3]);
+            const auto z = parseInt(args[4]);
+            if (!x || !y || !z || !schematics_.setOrigin(args[1], {*x, *y, *z})) return CommandResult::error(schematics_.lastError());
+            return CommandResult::ok({"schematic origin updated"});
+        }
+        if (action == "rotate") {
+            if (args.size() < 3) return CommandResult::error("usage: .schematic rotate <id> <degrees>");
+            const auto degrees = parseInt(args[2]);
+            if (!degrees || !schematics_.rotate(args[1], *degrees)) return CommandResult::error(schematics_.lastError());
+            return CommandResult::ok({"schematic rotation updated"});
+        }
+        if (action == "mirror") {
+            if (args.size() < 3) return CommandResult::error("usage: .schematic mirror <id> x|z|both|none");
+            const std::string value = args[2];
+            const bool x = value == "x" || value == "both";
+            const bool z = value == "z" || value == "both";
+            if ((!x && !z && value != "none") || !schematics_.setMirror(args[1], x, z)) return CommandResult::error(schematics_.lastError());
+            return CommandResult::ok({"schematic mirror updated"});
+        }
+        if (action == "layer") {
+            if (args.size() < 3) return CommandResult::error("usage: .schematic layer <id> all|single|range|above|below [values]");
+            LayerMode mode;
+            if (args[2] == "all") mode = LayerMode::All;
+            else if (args[2] == "single") mode = LayerMode::Single;
+            else if (args[2] == "range") mode = LayerMode::Range;
+            else if (args[2] == "above") mode = LayerMode::Above;
+            else if (args[2] == "below") mode = LayerMode::Below;
+            else return CommandResult::error("unknown layer mode");
+            const auto current = args.size() >= 4 ? parseInt(args[3]) : std::optional<int>{0};
+            const auto minimum = args.size() >= 5 ? parseInt(args[4]) : std::optional<int>{0};
+            const auto maximum = args.size() >= 6 ? parseInt(args[5]) : std::optional<int>{0};
+            if (!current || !minimum || !maximum || !schematics_.setLayerMode(args[1], mode, *current, *minimum, *maximum)) {
+                return CommandResult::error(schematics_.lastError());
+            }
+            return CommandResult::ok({"schematic layer updated"});
+        }
+        if (action == "search") {
+            if (args.size() < 3) return CommandResult::error("usage: .schematic search <id> <block filter>");
+            const auto results = schematics_.search(args[1], join(args, 2));
+            if (results.empty()) return CommandResult::ok({"no matching blocks"});
+            std::vector<std::string> messages{"matches: " + std::to_string(results.size())};
+            const std::size_t shown = std::min<std::size_t>(results.size(), 32);
+            for (std::size_t index = 0; index < shown; ++index) {
+                const auto& result = results[index];
+                messages.push_back(result.block + " local " + std::to_string(result.local.x) + "," +
+                                   std::to_string(result.local.y) + "," + std::to_string(result.local.z) +
+                                   " world " + std::to_string(result.world.x) + "," + std::to_string(result.world.y) + "," +
+                                   std::to_string(result.world.z));
+            }
+            if (shown < results.size()) messages.push_back("... truncated to 32 results");
+            return CommandResult::ok(std::move(messages));
+        }
+        return CommandResult::error("unknown schematic action");
+    });
 }
 
 void Client::tick(double deltaSeconds) {
@@ -246,17 +347,21 @@ void Client::tick(double deltaSeconds) {
 }
 
 void Client::render2D(int width, int height, double deltaSeconds) {
+    commands2D_.clear();
     Render2DEvent event;
     event.width = width;
     event.height = height;
     event.deltaSeconds = deltaSeconds;
+    event.commands = &commands2D_;
     modules_.onRender2D(event);
     events_.publish(event);
 }
 
 void Client::render3D(double deltaSeconds) {
+    commands3D_.clear();
     Render3DEvent event;
     event.deltaSeconds = deltaSeconds;
+    event.commands = &commands3D_;
     modules_.onRender3D(event);
     events_.publish(event);
 }
