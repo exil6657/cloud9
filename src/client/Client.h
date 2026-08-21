@@ -1,0 +1,58 @@
+#pragma once
+
+#include "client/CommandManager.h"
+#include "client/ConfigManager.h"
+#include "client/FriendManager.h"
+#include "events/EventManager.h"
+#include "modules/ModuleManager.h"
+
+#include <filesystem>
+#include <string>
+#include <vector>
+
+namespace cloud9 {
+
+class Client {
+public:
+    Client();
+
+    // Initializes only host-independent state. A game adapter must provide any
+    // renderer or world bridge explicitly; none is discovered implicitly.
+    bool initialize(std::filesystem::path configRoot = ConfigManager::defaultRoot());
+    void shutdown();
+    [[nodiscard]] bool initialized() const noexcept { return initialized_; }
+
+    [[nodiscard]] ModuleManager& moduleManager() noexcept { return modules_; }
+    [[nodiscard]] const ModuleManager& moduleManager() const noexcept { return modules_; }
+    [[nodiscard]] EventManager& eventManager() noexcept { return events_; }
+    [[nodiscard]] CommandManager& commandManager() noexcept { return commands_; }
+    [[nodiscard]] ConfigManager& configManager() noexcept { return config_; }
+    [[nodiscard]] FriendManager& friendManager() noexcept { return friends_; }
+    [[nodiscard]] const std::vector<Waypoint>& waypoints() const noexcept { return waypoints_; }
+
+    void tick(double deltaSeconds);
+    void render2D(int width, int height, double deltaSeconds);
+    void render3D(double deltaSeconds);
+    void key(int key, bool down);
+    void mouse(int button, bool down);
+    void snapshot(WorldSnapshot snapshot);
+
+    [[nodiscard]] CommandResult executeCommand(const std::string& text) const;
+    bool saveProfile(const std::string& name = "default");
+    bool loadProfile(const std::string& name = "default");
+
+private:
+    void registerFeatures();
+    void registerCommands();
+
+    EventManager events_;
+    ModuleManager modules_;
+    FriendManager friends_;
+    ConfigManager config_;
+    CommandManager commands_;
+    std::vector<Waypoint> waypoints_;
+    WorldSnapshot lastSnapshot_;
+    bool initialized_{false};
+};
+
+} // namespace cloud9
