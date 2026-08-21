@@ -15,5 +15,7 @@
 7. ✅ Add `SchematicManager`, `SchematicRenderer`, and host-neutral
    `.schematic` commands for loading, selecting, placing, layering, searching,
    and managing multiple schematics.
-8. ✅ Add the host-neutral `SchematicUI` model and persist its state in named
-   profiles. A toolkit-specific visual panel remains next.
+8. ✅ Add the host-neutral `SchematicUI` model, persist its state in named
+   profiles, and add a renderer-independent `SchematicPanel` adapter.
+9. Add a toolkit-specific binding layer only when a host supplies the chosen
+   UI backend; keep the core panel adapter backend-neutral.

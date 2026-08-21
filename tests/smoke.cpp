@@ -1,5 +1,6 @@
 #include "client/CapabilityRegistry.h"
 #include "client/Client.h"
+#include "gui/SchematicPanel.h"
 #include "events/EventManager.h"
 #include "hooks/SignatureScanner.h"
 #include "modules/visual/Fullbright.h"
@@ -184,6 +185,13 @@ void testSchematicManager() {
     assert((results.front().world == cloud9::BlockPos{5, 6, 7}));
     assert(manager.rotate("fixture", 90));
     assert(manager.placement("fixture")->rotation() == cloud9::Rotation::Deg90);
+    cloud9::SchematicUI ui(manager);
+    assert(ui.select("fixture"));
+    ui.setOpen(true);
+    cloud9::RenderCommandBuffer panelCommands;
+    const auto panelStats = cloud9::SchematicPanel::render(ui, panelCommands, 1280, 720);
+    assert(panelStats.rectangles >= 4 && panelStats.labels >= 6 && panelStats.rows == 1);
+    assert(!panelCommands.commands().empty());
     assert(manager.unload("fixture"));
     assert(manager.list().empty());
 }

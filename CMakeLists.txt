@@ -17,6 +17,7 @@ add_library(cloud9_core STATIC
     src/client/CommandManager.cpp
     src/client/ConfigManager.cpp
     src/client/FriendManager.cpp
+    src/gui/SchematicPanel.cpp
     src/gui/ThemeManager.cpp
     src/modules/hud/ArrayList.cpp
     src/modules/hud/Clock.cpp

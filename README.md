@@ -71,6 +71,9 @@ explanatory error for gzip files and still supports uncompressed NBT fixtures.
 such as process memory and packet access are never inferred.
 - Host-neutral `SchematicUI` state model with profile persistence for selected
 schematics, layer/render settings, and search filters.
+- Renderer-independent `SchematicPanel` adapter that draws the schematic UI
+from the model using text and rectangle commands; a host can translate these
+to ImGui, DirectX, or another toolkit.
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for extension points and
 [`docs/ROADMAP.md`](docs/ROADMAP.md) for the safe implementation order.

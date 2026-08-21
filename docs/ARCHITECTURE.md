@@ -25,9 +25,9 @@ all game-facing data is represented by snapshots and interfaces.
   locate a process or write memory.
 - `hooks/HookManager` tracks named, externally installed callbacks. The core
   does not depend on MinHook or kiero.
-- `render/ScreenProjection`, `render/WorldRenderer`, and
-  `render/RenderCommands` accept matrices and output geometry. A host may
-  translate commands to ImGui, DirectX, or another renderer.
+- `render/ScreenProjection`, `render/WorldRenderer`, `render/RenderCommands`,
+  and `gui/SchematicPanel` accept matrices/model state and output geometry. A
+  host may translate commands to ImGui, DirectX, or another renderer.
 - `Render2DEvent` and `Render3DEvent` carry an optional command-buffer pointer;
   the core owns the frame buffer and clears it at the start of each frame.
 - `sdk/WorldSnapshot` is a read-only data contract carrying player/entity

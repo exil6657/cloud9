@@ -1,4 +1,5 @@
 #include "client/Client.h"
+#include "gui/SchematicPanel.h"
 
 #include "modules/FeatureCatalog.h"
 #include "modules/Settings.h"
@@ -374,6 +375,7 @@ void Client::render2D(int width, int height, double deltaSeconds) {
     event.commands = &commands2D_;
     modules_.onRender2D(event);
     events_.publish(event);
+    if (schematicUI_.state().open) (void)SchematicPanel::render(schematicUI_, commands2D_, width, height);
 }
 
 void Client::render3D(double deltaSeconds) {
