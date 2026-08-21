@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(cloud9_core STATIC
+    src/client/CapabilityRegistry.cpp
     src/client/Client.cpp
     src/client/CommandManager.cpp
     src/client/ConfigManager.cpp
@@ -35,6 +36,7 @@ add_library(cloud9_core STATIC
     src/schematic/SchematicLoader.cpp
     src/schematic/SchematicManager.cpp
     src/schematic/SchematicRenderer.cpp
+    src/schematic/SchematicUI.cpp
     src/schematic/SchematicVerifier.cpp
     src/utils/Json.cpp
     src/utils/Logger.cpp

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "client/CapabilityRegistry.h"
 #include "events/Event.h"
 #include "modules/Settings.h"
 #include "utils/Json.h"
@@ -38,6 +39,10 @@ public:
     void disable() { (void)setEnabled(false); }
 
     [[nodiscard]] const std::vector<SettingPtr>& settings() const noexcept { return settings_; }
+    [[nodiscard]] const std::vector<Capability>& requiredCapabilities() const noexcept { return requiredCapabilities_; }
+    [[nodiscard]] std::vector<Capability> missingCapabilities(const CapabilityRegistry& registry) const {
+        return registry.missing(requiredCapabilities_);
+    }
     [[nodiscard]] Setting* setting(const std::string& name) noexcept;
     [[nodiscard]] const Setting* setting(const std::string& name) const noexcept;
 
@@ -59,6 +64,7 @@ public:
 
 protected:
     void addSetting(SettingPtr setting);
+    void requireCapability(Capability capability);
     void setAvailable(bool available) noexcept { available_ = available; }
 
 private:
@@ -70,6 +76,7 @@ private:
     bool enabled_{false};
     int keybind_{0};
     std::vector<SettingPtr> settings_;
+    std::vector<Capability> requiredCapabilities_;
 };
 
 class CatalogModule final : public Module {

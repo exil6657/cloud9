@@ -71,6 +71,12 @@ const Setting* Module::setting(const std::string& name) const noexcept {
     return it == settings_.end() ? nullptr : it->get();
 }
 
+void Module::requireCapability(Capability capability) {
+    if (std::find(requiredCapabilities_.begin(), requiredCapabilities_.end(), capability) == requiredCapabilities_.end()) {
+        requiredCapabilities_.push_back(capability);
+    }
+}
+
 void Module::addSetting(SettingPtr setting) {
     if (setting == nullptr || this->setting(setting->name()) != nullptr) return;
     settings_.push_back(std::move(setting));

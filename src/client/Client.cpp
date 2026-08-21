@@ -47,11 +47,12 @@ std::string join(const std::vector<std::string>& values, std::size_t start = 0) 
 
 } // namespace
 
-Client::Client() : config_(ConfigManager::defaultRoot()) {}
+Client::Client() : config_(ConfigManager::defaultRoot()), schematicUI_(schematics_) {}
 
 bool Client::initialize(std::filesystem::path configRoot) {
     if (initialized_) return true;
     config_ = ConfigManager(std::move(configRoot));
+    modules_.setCapabilityRegistry(&capabilities_);
     Logger::instance().setFile(config_.root() / "cloud9.log");
     registerFeatures();
     registerCommands();
@@ -393,11 +394,14 @@ void Client::snapshot(WorldSnapshot snapshotValue) {
 CommandResult Client::executeCommand(const std::string& text) const { return commands_.execute(text); }
 
 bool Client::saveProfile(const std::string& name) {
-    return config_.saveProfile(name, modules_, friends_, waypoints_);
+    return config_.saveProfile(name, modules_, friends_, waypoints_, schematicUI_.serialize());
 }
 
 bool Client::loadProfile(const std::string& name) {
-    return config_.loadProfile(name, modules_, friends_, waypoints_);
+    Json schematicState;
+    const bool loaded = config_.loadProfile(name, modules_, friends_, waypoints_, &schematicState);
+    if (loaded) schematicUI_.deserialize(schematicState);
+    return loaded;
 }
 
 } // namespace cloud9

@@ -14,5 +14,14 @@
     }
   },
   "friends": [],
-  "waypoints": []
+  "waypoints": [],
+  "schematicUI": {
+    "open": false,
+    "tab": "loaded",
+    "selectedId": "",
+    "searchFilter": "",
+    "renderMode": "mixed",
+    "maxDistance": 64.0,
+    "includeAir": false
+  }
 }

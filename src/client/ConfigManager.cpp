@@ -91,7 +91,7 @@ bool ConfigManager::setError(std::string message) {
 }
 
 bool ConfigManager::saveProfile(const std::string& name, const ModuleManager& modules, const FriendManager& friends,
-                                const std::vector<Waypoint>& waypoints) {
+                                const std::vector<Waypoint>& waypoints, const Json& schematicUiState) {
     std::error_code error;
     std::filesystem::create_directories(root_, error);
     if (error) return setError("could not create config directory: " + error.message());
@@ -100,7 +100,7 @@ bool ConfigManager::saveProfile(const std::string& name, const ModuleManager& mo
     waypointValues.reserve(waypoints.size());
     for (const Waypoint& waypoint : waypoints) waypointValues.push_back(waypointJson(waypoint));
     Json profile(Json::object_t{{"version", 1}, {"modules", modules.serialize()}, {"friends", friends.serialize()},
-                                {"waypoints", Json(std::move(waypointValues))}});
+                                {"waypoints", Json(std::move(waypointValues))}, {"schematicUI", schematicUiState}});
 
     const std::filesystem::path destination = profilePath(name);
     const std::filesystem::path temporary = destination.string() + ".tmp";
@@ -123,7 +123,7 @@ bool ConfigManager::saveProfile(const std::string& name, const ModuleManager& mo
 }
 
 bool ConfigManager::loadProfile(const std::string& name, ModuleManager& modules, FriendManager& friends,
-                                std::vector<Waypoint>& waypoints) {
+                                std::vector<Waypoint>& waypoints, Json* schematicUiState) {
     const std::filesystem::path source = profilePath(name);
     std::ifstream input(source, std::ios::binary);
     if (!input) return setError("profile does not exist: " + source.string());
@@ -142,6 +142,10 @@ bool ConfigManager::loadProfile(const std::string& name, ModuleManager& modules,
         for (const Json& waypoint : value->array()) {
             if (auto parsed = parseWaypoint(waypoint); parsed.has_value()) waypoints.push_back(std::move(*parsed));
         }
+    }
+    if (schematicUiState != nullptr) {
+        if (const Json* value = profile.find("schematicUI"); value != nullptr) *schematicUiState = *value;
+        else *schematicUiState = Json{};
     }
     lastError_.clear();
     logInfo("Loaded profile '" + safeName(name) + "'");

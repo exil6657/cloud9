@@ -65,6 +65,18 @@ bool ModuleManager::setEnabled(const std::string& name, bool enabled) {
         logWarning("Module '" + module->name() + "' is a roadmap placeholder and is not available");
         return false;
     }
+    if (enabled && capabilities_ != nullptr) {
+        const auto missing = module->missingCapabilities(*capabilities_);
+        if (!missing.empty()) {
+            std::string names;
+            for (const Capability capability : missing) {
+                if (!names.empty()) names += ", ";
+                names += capabilityName(capability);
+            }
+            logWarning("Capability gate blocked '" + module->name() + "': missing " + names);
+            return false;
+        }
+    }
     if (enabled && realmMode_ && module->safety() == SafetyClass::Detected) {
         logWarning("Realm Mode blocked detected module '" + module->name() + "'");
         return false;
@@ -163,6 +175,7 @@ void ModuleManager::deserialize(const Json& json) {
         module->deserialize(value);
         if (realmMode_ && module->safety() == SafetyClass::Detected) module->disable();
         if (!module->available()) module->disable();
+        if (capabilities_ != nullptr && !module->missingCapabilities(*capabilities_).empty()) module->disable();
     }
 }
 

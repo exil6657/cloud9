@@ -23,6 +23,8 @@ public:
     void panic();
 
     void setRealmMode(bool enabled);
+    void setCapabilityRegistry(const CapabilityRegistry* registry) noexcept { capabilities_ = registry; }
+    [[nodiscard]] const CapabilityRegistry* capabilityRegistry() const noexcept { return capabilities_; }
     [[nodiscard]] bool realmMode() const noexcept { return realmMode_; }
 
     void onTick(TickEvent& event);
@@ -42,6 +44,7 @@ public:
 private:
     std::vector<std::unique_ptr<Module>> modules_;
     bool realmMode_{false};
+    const CapabilityRegistry* capabilities_{nullptr};
 };
 
 } // namespace cloud9

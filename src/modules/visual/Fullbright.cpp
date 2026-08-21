@@ -4,6 +4,7 @@ namespace cloud9 {
 
 Fullbright::Fullbright()
     : Module("Fullbright", "Expose a renderer brightness override", ModuleCategory::Visual, SafetyClass::Safe, true) {
+    requireCapability(Capability::VisualOverride);
     auto gamma = std::make_unique<FloatSetting>("gamma", "Local brightness multiplier", 10.0F, 1.0F, 25.0F, 0.5F);
     gammaSetting_ = gamma.get();
     gammaSetting_->setOnChanged([this] {

@@ -10,9 +10,10 @@ all game-facing data is represented by snapshots and interfaces.
 2. `Client` registers the feature catalog and available modules.
 3. A host converts its own data into a `WorldSnapshot` and publishes tick/render
    events. The core only reads those values.
-4. `ModuleManager` applies realm-mode policy before lifecycle transitions.
-5. `ConfigManager` serializes module state, friends, and waypoints to a named
-   JSON profile.
+4. `ModuleManager` applies Realm Mode and explicit capability policy before
+   lifecycle transitions.
+5. `ConfigManager` serializes module state, friends, waypoints, and schematic
+   panel state to a named JSON profile.
 6. The schematic subsystem loads immutable `Schematic` values through
    `SchematicManager`, then uses stable placements, layers, search, resources,
    `SchematicRenderer`, and `SchematicVerifier` against caller-provided block

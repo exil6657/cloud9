@@ -18,6 +18,7 @@ const char* dimensionNameLocal(Dimension dimension) noexcept {
 }
 
 Coordinates::Coordinates() : HudModule("Coordinates", "Display player coordinates") {
+    requireCapability(Capability::WorldSnapshot);
     addHudSettings({8.0F, 8.0F});
     auto decimals = std::make_unique<IntSetting>("decimalPlaces", "Decimal places", 1, 0, 3);
     decimals_ = decimals.get();

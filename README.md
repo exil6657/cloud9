@@ -43,7 +43,8 @@ explanatory error for gzip files and still supports uncompressed NBT fixtures.
 - `EventManager`: typed publish/subscribe with priorities and cancellation-aware
   event payloads.
 - `Module` / `ModuleManager`: categories, safety classes, keybinds, settings,
-  lifecycle, realm-mode gating, and unavailable roadmap placeholders.
+  lifecycle, Realm Mode gating, explicit capability gating, and unavailable
+  roadmap placeholders.
 - Type-safe settings: bool, integer, float, enum, key, color, string, and
   vector-three settings.
 - JSON profiles stored below `%APPDATA%/Cloud9` on Windows or
@@ -63,6 +64,10 @@ tests without reading another process.
 buffer for tracers and 3D boxes.
 - First HUD modules: Coordinates, FPS Counter, Watermark, and ArrayList, all
 emitting commands without ImGui or DirectX dependencies.
+- Explicit `CapabilityRegistry` with safe defaults; unavailable host features
+such as process memory and packet access are never inferred.
+- Host-neutral `SchematicUI` state model with profile persistence for selected
+schematics, layer/render settings, and search filters.
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for extension points and
 [`docs/ROADMAP.md`](docs/ROADMAP.md) for the safe implementation order.

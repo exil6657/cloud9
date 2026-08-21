@@ -12,7 +12,9 @@ namespace cloud9 {
 class HudModule : public Module {
 public:
     HudModule(std::string name, std::string description, SafetyClass safety = SafetyClass::Safe)
-        : Module(std::move(name), std::move(description), ModuleCategory::HUD, safety, true) {}
+        : Module(std::move(name), std::move(description), ModuleCategory::HUD, safety, true) {
+        requireCapability(Capability::Render2D);
+    }
 
 protected:
     void addHudSettings(Vec2 position = {8.0F, 8.0F}, Color color = {0.8824F, 0.9608F, 0.9961F, 1.0F}) {

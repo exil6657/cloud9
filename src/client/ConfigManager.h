@@ -29,9 +29,9 @@ public:
     [[nodiscard]] std::vector<std::string> listProfiles() const;
 
     bool saveProfile(const std::string& name, const ModuleManager& modules, const FriendManager& friends,
-                     const std::vector<Waypoint>& waypoints);
+                     const std::vector<Waypoint>& waypoints, const Json& schematicUiState = {});
     bool loadProfile(const std::string& name, ModuleManager& modules, FriendManager& friends,
-                     std::vector<Waypoint>& waypoints);
+                     std::vector<Waypoint>& waypoints, Json* schematicUiState = nullptr);
     bool deleteProfile(const std::string& name);
 
     [[nodiscard]] const std::string& lastError() const noexcept { return lastError_; }

@@ -1,3 +1,4 @@
+#include "client/CapabilityRegistry.h"
 #include "client/Client.h"
 #include "events/EventManager.h"
 #include "hooks/SignatureScanner.h"
@@ -79,6 +80,23 @@ std::vector<std::uint8_t> structureFixture() {
     bytes.push_back(static_cast<std::uint8_t>(cloud9::NbtTagType::End));
     bytes.push_back(static_cast<std::uint8_t>(cloud9::NbtTagType::End));
     return bytes;
+}
+
+
+void testCapabilities() {
+    cloud9::CapabilityRegistry registry;
+    registry.set(cloud9::Capability::Render2D);
+    registry.set(cloud9::Capability::Schematic);
+    assert(registry.has(cloud9::Capability::Render2D));
+    assert(!registry.has(cloud9::Capability::GameMemory));
+    assert(registry.missing({cloud9::Capability::Render2D, cloud9::Capability::GameMemory}).size() == 1);
+    const auto serialized = registry.serialize();
+    cloud9::CapabilityRegistry restored;
+    restored.deserialize(serialized);
+    assert(restored.has(cloud9::Capability::Render2D));
+    assert(!restored.has(cloud9::Capability::GameMemory));
+    assert(cloud9::capabilityFromName("render2D").value() == cloud9::Capability::Render2D);
+    assert(!cloud9::capabilityFromName("not-a-capability").has_value());
 }
 
 void testJson() {
@@ -186,6 +204,9 @@ void testRenderAndHud() {
     std::filesystem::remove_all(root, error);
     cloud9::Client client;
     assert(client.initialize(root));
+    client.capabilities().set(cloud9::Capability::Render2D, false);
+    assert(!client.moduleManager().setEnabled("Coordinates", true));
+    client.capabilities().set(cloud9::Capability::Render2D, true);
     assert(client.moduleManager().setEnabled("Coordinates", true));
     assert(client.moduleManager().setEnabled("FPS Counter", true));
     assert(client.moduleManager().setEnabled("Watermark", true));
@@ -214,11 +235,21 @@ void testClientAndConfig() {
     assert(client.moduleManager().setEnabled("Fullbright", true));
     const auto result = client.executeCommand(".set Fullbright gamma 12");
     assert(result.handled && result.messages.size() == 1);
+    assert(client.schematicManager().loadBytes(structureFixture(), ".nbt", "persist", "persist"));
+    assert(client.schematicUI().select("persist"));
+    client.schematicUI().setOpen(true);
+    client.schematicUI().setSearchFilter("stone");
+    client.schematicUI().setRenderMode(cloud9::SchematicRenderMode::Wireframe);
     assert(client.saveProfile("smoke"));
     assert(std::filesystem::exists(root / "smoke.json"));
+    client.schematicUI().setOpen(false);
+    client.schematicUI().setSearchFilter({});
     client.moduleManager().panic();
     assert(client.loadProfile("smoke"));
     assert(client.moduleManager().find("Fullbright")->enabled());
+    assert(client.schematicUI().state().open);
+    assert(client.schematicUI().state().searchFilter == "stone");
+    assert(client.schematicUI().state().renderMode == cloud9::SchematicRenderMode::Wireframe);
     client.shutdown();
     std::filesystem::remove_all(root, error);
 }
@@ -226,6 +257,7 @@ void testClientAndConfig() {
 } // namespace
 
 int main() {
+    testCapabilities();
     testJson();
     testEvents();
     testSignatures();
